@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Cloud Removal & Analysis System | SIH 2026</title>
+    <!-- Modern Typography & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for High-Fidelity Histograms, Radar Fingerprint & Donut Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Cosmic Background Canvas & Nebula Radial Glows -->
+    <div class="cosmos-bg"></div>
+    <div class="nebula-glow nebula-1"></div>
+    <div class="nebula-glow nebula-2"></div>
+
+    <div class="app-container">
+        <!-- Top SIH Navigation & Mission Telemetry Bar -->
+        <header class="mission-header">
+            <div class="header-badge-wrap">
+                <span class="sih-badge">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    SIH 2026 | Problem Statement ID: 26209
+                </span>
+                <button class="dashboard-trigger-btn" id="open-dashboard-btn">
+                    <i class="fa-solid fa-chart-line"></i> Mission Telemetry Dashboard
+                </button>
+            </div>
+            <h1 class="main-title">
+                <span class="cloud-icon"><i class="fa-solid fa-cloud"></i></span>
+                <span class="arrow-sep"><i class="fa-solid fa-arrow-right-long"></i></span>
+                <span class="sat-icon"><i class="fa-solid fa-satellite"></i></span>
+                Satellite Cloud Removal &amp; Analysis
+            </h1>
+            <p class="main-subtitle">
+                Transform cloud-obscured satellite imagery into crystal-clear optical data with real-time computer vision metrics &amp; post-processing sector insights.
+            </p>
+        </header>
+
+        <!-- Main Workspace Grid (Left: Upload/Presets | Right: Telemetry & Interactive Viewer) -->
+        <div class="workspace-grid">
+            <!-- Left Panel: Upload & 1-Click Sample Scenes -->
+            <aside class="panel-left card-glass">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-upload text-cyan"></i> Upload Cloudy Satellite Image</h3>
+                </div>
+
+                <!-- Drag & Drop Upload Zone -->
+                <div class="upload-dropzone" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*,.tif,.tiff" class="file-input-hidden">
+                    <div class="dropzone-idle" id="dropzone-idle">
+                        <div class="dropzone-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="dropzone-text">Drop Image Here</div>
+                        <div class="dropzone-sub">GeoTIFF, PNG, JPG, BMP, WebP</div>
+                    </div>
+                    <!-- Image Preview When Loaded -->
+                    <div class="dropzone-preview" id="dropzone-preview" style="display:none;">
+                        <img id="preview-thumb" src="" alt="Selected Preview">
+                        <div class="preview-overlay">
+                            <span class="preview-filename" id="preview-filename">image.jpg</span>
+                            <button class="preview-change-btn" id="change-file-btn" type="button">
+                                <i class="fa-solid fa-rotate"></i> Change
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1-Click Sample Scenes -->
+                <div class="sample-presets-section">
+                    <div class="sample-title">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Or Pick 1-Click Sample Scene
+                    </div>
+                    <div class="sample-buttons-list">
+                        <button class="sample-btn" data-scene="agriculture">
+                            <span><i class="fa-solid fa-wheat-awn"></i> Agriculture Scene</span>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </button>
+                        <button class="sample-btn" data-scene="coastal">
+                            <span><i class="fa-solid fa-water"></i> Coastal Water Scene</span>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </button>
+                        <button class="sample-btn" data-scene="urban">
+                            <span><i class="fa-solid fa-city"></i> Urban Footprint Scene</span>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </button>
+                        <button class="sample-btn" data-scene="mountain">
+                            <span><i class="fa-solid fa-mountain-sun"></i> Mountain &amp; Forest Scene</span>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Primary Action Button -->
+                <button class="btn-primary-glow" id="enhance-btn">
+                    <i class="fa-solid fa-bolt"></i> Remove Clouds &amp; Enhance
+                </button>
+                
+                <div class="processing-indicator" id="processing-indicator" style="display:none;">
+                    <div class="cyber-spinner"></div>
+                    <span>Processing optical transmission &amp; dehazing...</span>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Enhancements, Metrics & Optical Comparison -->
+            <main class="panel-right card-glass">
+                <div class="panel-topbar">
+                    <div class="panel-title">
+                        <h3><i class="fa-solid fa-microchip text-cyan"></i> Enhancements &amp; Real-Time Metrics</h3>
+                    </div>
+                    <div class="action-buttons-group">
+                        <button class="btn-action btn-pdf" id="export-pdf-btn">
+                            <i class="fa-solid fa-file-pdf"></i> Export PDF Report
+                        </button>
+                        <a href="#" class="btn-action btn-download" id="download-cleared-btn">
+                            <i class="fa-solid fa-download"></i> Download Cleared Image
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Key Telemetry Metrics Row -->
+                <div class="metrics-kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-regular fa-clock"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">PROC. TIME</span>
+                            <span class="kpi-value" id="val-proc-time">0.166s</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">INPUT SIZE</span>
+                            <span class="kpi-value" id="val-input-size">20.9 KB</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-file-arrow-down"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">OUTPUT SIZE</span>
+                            <span class="kpi-value" id="val-output-size">161.3 KB</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card highlight-green">
+                        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">CONTRAST BOOST</span>
+                            <span class="kpi-value text-emerald" id="val-contrast-boost">+979.2%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card highlight-cyan">
+                        <div class="kpi-icon"><i class="fa-solid fa-smog"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">HAZE REDUCTION</span>
+                            <span class="kpi-value text-cyan" id="val-haze-reduction">85.8%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Row: Cloud Coverage Meter + Pixel Intensity Histogram -->
+                <div class="analytics-subgrid">
+                    <!-- Estimated Cloud Coverage Gauge Card -->
+                    <div class="subcard cloud-coverage-card">
+                        <span class="subcard-title">ESTIMATED CLOUD COVERAGE</span>
+                        <div class="cloud-coverage-body">
+                            <div class="cloud-ico-val">
+                                <i class="fa-solid fa-cloud"></i>
+                                <span class="cloud-val" id="val-cloud-coverage">0.3%</span>
+                            </div>
+                            <div class="coverage-bar-track">
+                                <div class="coverage-bar-fill" id="coverage-bar-fill" style="width: 0.3%;"></div>
+                            </div>
+                            <span class="coverage-note" id="coverage-note">Clear Atmospheric Window</span>
+                        </div>
+                    </div>
+
+                    <!-- Pixel Intensity Histogram Curve Chart -->
+                    <div class="subcard histogram-card">
+                        <div class="histogram-header">
+                            <span class="subcard-title">PIXEL INTENSITY HISTOGRAM (BRIGHTNESS)</span>
+                            <div class="hist-legend">
+                                <span class="legend-pill cloudy"><span class="dot"></span> Before (Cloudy)</span>
+                                <span class="legend-pill clear"><span class="dot"></span> After (Clear)</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="histogramChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Optical Comparison Slider Viewer -->
+                <div class="viewer-section">
+                    <div class="viewer-control-bar">
+                        <span class="viewer-label">
+                            <i class="fa-solid fa-sliders"></i> Interactive Optical Comparison
+                        </span>
+                        
+                        <div class="viewer-toggles">
+                            <button class="btn-action btn-loupe" id="toggle-magnifier-btn" type="button">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i> Magnifying Lens
+                            </button>
+
+                            <label class="mask-toggle-label">
+                                <input type="checkbox" id="toggle-cloud-mask">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text"><i class="fa-solid fa-eye"></i> Show Cloud Mask</span>
+                            </label>
+
+                            <div class="view-mode-tabs">
+                                <button class="mode-tab active" data-mode="split">
+                                    <i class="fa-solid fa-table-columns"></i> Split View
+                                </button>
+                                <button class="mode-tab" data-mode="original">
+                                    <i class="fa-solid fa-cloud"></i> Original Cloudy
+                                </button>
+                                <button class="mode-tab" data-mode="cleared">
+                                    <i class="fa-solid fa-sun"></i> Cleared Optical
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Draggable Comparison Viewport -->
+                    <div class="comparison-viewport" id="comparison-viewport">
+                        <!-- Base Layer: Cleared Enhanced Optical Image (Right side) -->
+                        <img id="img-cleared" src="" alt="Cleared Enhanced Optical" class="comp-img comp-img-base">
+                        
+                        <!-- Cloud Mask Layer (Optional toggle) -->
+                        <img id="img-mask" src="" alt="Cloud Detection Mask" class="comp-img comp-img-mask" style="display:none;">
+
+                        <!-- Left Layer: Original Cloudy Image (Clipped by slider handle from left) -->
+                        <div class="cloudy-clipped-wrap" id="cloudy-clipped-wrap">
+                            <img id="img-cloudy" src="" alt="Cloudy Satellite Original" class="comp-img comp-img-overlay">
+                        </div>
+
+                        <!-- Draggable Divider Line & Handle -->
+                        <div class="slider-divider" id="slider-divider">
+                            <div class="slider-handle">
+                                <i class="fa-solid fa-arrows-left-right"></i>
+                            </div>
+                        </div>
+
+                        <!-- Floating Corner Badges -->
+                        <div class="comp-badge badge-left">
+                            <i class="fa-solid fa-cloud"></i> Original Cloudy
+                        </div>
+                        <div class="comp-badge badge-right">
+                            <i class="fa-solid fa-circle-check text-emerald"></i> Cleared Optical
+                        </div>
+
+                        <!-- High-Definition Interactive Magnifying Lens -->
+                        <div class="loupe-lens" id="loupe-lens" style="display:none;">
+                            <img id="loupe-img" src="" alt="Magnified Detail" class="loupe-img-tag">
+                            <div class="loupe-crosshair-h"></div>
+                            <div class="loupe-crosshair-v"></div>
+                            <div class="loupe-hud">
+                                <span class="loupe-hud-zoom" id="loupe-zoom-txt">2.5X ZOOM</span>
+                                <span class="loupe-hud-coord" id="loupe-coord-txt">X: 0 Y: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewer-helper-tip">
+                        <i class="fa-solid fa-circle-info"></i> Drag handle left/right to compare. Toggle <span class="text-cyan font-bold">Magnifying Lens</span> (or hover) to inspect high-definition optical clarity. Scroll mouse wheel to adjust zoom (1.5x - 5x).
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Section: Multi-Sector Post-Processing Analysis Suite -->
+        <section class="analysis-suite-section card-glass">
+            <div class="suite-header">
+                <div class="suite-title-wrap">
+                    <h2><i class="fa-solid fa-cubes-stacked text-purple"></i> Multi-Sector Post-Processing Analysis Suite</h2>
+                    <p>Derive real-world actionable intelligence from cleaned satellite images across 5 specialized domains.</p>
+                </div>
+            </div>
+
+            <!-- 4 Domain Navigation Tabs -->
+            <div class="sector-tabs-nav">
+                <button class="sector-tab-btn active" data-module="ndvi">
+                    <div class="sector-tab-icon"><i class="fa-solid fa-leaf text-emerald"></i></div>
+                    <div class="sector-tab-text">
+                        <span class="sector-name">NDVI Vegetation</span>
+                        <span class="sector-badge badge-agri">AGRICULTURE</span>
+                    </div>
+                </button>
+                <button class="sector-tab-btn" data-module="flood">
+                    <div class="sector-tab-icon"><i class="fa-solid fa-water text-cyan"></i></div>
+                    <div class="sector-tab-text">
+                        <span class="sector-name">Flood Detection</span>
+                        <span class="sector-badge badge-disaster">DISASTER</span>
+                    </div>
+                </button>
+                <button class="sector-tab-btn sector-tab-rescue" data-module="flood_rescue">
+                    <div class="sector-tab-icon"><i class="fa-solid fa-house-flood-water" style="color:#ef4444;"></i></div>
+                    <div class="sector-tab-text">
+                        <span class="sector-name">Flood &amp; Rescue Zones</span>
+                        <span class="sector-badge badge-rescue">RESCUE</span>
+                    </div>
+                </button>
+                <button class="sector-tab-btn" data-module="buildings">
+                    <div class="sector-tab-icon"><i class="fa-solid fa-building-user text-amber"></i></div>
+                    <div class="sector-tab-text">
+                        <span class="sector-name">Building Extraction</span>
+                        <span class="sector-badge badge-urban">URBAN</span>
+                    </div>
+                </button>
+                <button class="sector-tab-btn" data-module="landcover">
+                    <div class="sector-tab-icon"><i class="fa-solid fa-map-location-dot text-violet"></i></div>
+                    <div class="sector-tab-text">
+                        <span class="sector-name">Land Cover Classification</span>
+                        <span class="sector-badge badge-climate">CLIMATE</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Active Sector Analysis Display Area -->
+            <div class="sector-display-container">
+                <!-- Left: Colormapped Map Overlay with HUD Legend -->
+                <div class="sector-map-view">
+                    <div class="map-wrapper" id="sector-map-wrapper">
+                        <img id="analysis-result-map" src="" alt="Sector Analysis Map" class="analysis-map-img">
+                        <div class="map-spinner" id="sector-spinner" style="display:none;">
+                            <div class="cyber-spinner"></div>
+                            <span>Computing CV Classification &amp; Spatial Segmentation...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Sector Numerical Metrics & Donut Chart Breakdown -->
+                <div class="sector-metrics-panel">
+                    <div class="sector-meta">
+                        <h3 id="module-display-title">NDVI Vegetation Health Index</h3>
+                        <p id="module-display-desc">NDVI quantifies vegetation health by measuring chlorophyll reflectance. Green indicates thriving crops/forests.</p>
+                    </div>
+
+                    <!-- Metrics Key-Value List -->
+                    <div class="sector-stats-list" id="sector-stats-list">
+                        <!-- Dynamically populated via JS -->
+                    </div>
+
+                    <!-- Chart & Action -->
+                    <div class="sector-chart-wrap">
+                        <div class="donut-chart-box">
+                            <canvas id="sectorDonutChart"></canvas>
+                        </div>
+                        <div class="donut-legend" id="donut-legend"></div>
+                    </div>
+
+                    <button class="btn-export-analysis" id="export-analysis-btn">
+                        <i class="fa-solid fa-file-arrow-down"></i> Export Analysis Map &amp; Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Global Region Fingerprint Radar / Spider Chart -->
+        <section class="radar-fingerprint-section card-glass">
+            <div class="radar-header">
+                <h2><i class="fa-solid fa-globe text-cyan"></i> Global Region Fingerprint</h2>
+                <p>A unified view of all post-processing metrics (Updates as modules are run).</p>
+            </div>
+            <div class="radar-chart-container">
+                <canvas id="radarFingerprintChart"></canvas>
+            </div>
+        </section>
+
+        <!-- SIH Space Technology Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span><i class="fa-solid fa-satellite"></i> Satellite Cloud Removal &amp; Analysis System</span>
+                <span class="footer-dot">•</span>
+                <span>Smart India Hackathon (SIH 2026)</span>
+                <span class="footer-dot">•</span>
+                <span>Theme: Space Technology</span>
+                <span class="footer-dot">•</span>
+                <span>Problem Statement ID: 26209</span>
+                <span class="footer-dot">•</span>
+                <span>Category: Software</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Executive Mission Telemetry Dashboard Modal -->
+    <div class="modal-backdrop" id="dashboard-modal" style="display:none;">
+        <div class="modal-card card-glass">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="sih-badge"><i class="fa-solid fa-satellite"></i> SATELLITE TELEMETRY</span>
+                    <h2>Executive Mission Intelligence Dashboard</h2>
+                </div>
+                <button class="modal-close-btn" id="close-dashboard-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Summary KPI Cards -->
+                <div class="modal-kpi-grid">
+                    <div class="kpi-card">
+                        <span class="kpi-label">TOTAL SCENES PROCESSED</span>
+                        <span class="kpi-value text-cyan" id="dash-total-processed">143</span>
+                        <span class="kpi-sub"><i class="fa-solid fa-arrow-trend-up"></i> +12% this cycle</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">AVG. CONTRAST BOOST</span>
+                        <span class="kpi-value text-emerald" id="dash-avg-contrast">+84.6%</span>
+                        <span class="kpi-sub">Optical transmission restored</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">SURFACE ANALYZED</span>
+                        <span class="kpi-value text-amber" id="dash-total-land">1,780.5 km²</span>
+                        <span class="kpi-sub">Sentinel / Landsat standard</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">FLOOD HAZARDS FLAGGED</span>
+                        <span class="kpi-value text-red" id="dash-flood-alerts">14 Alerts</span>
+                        <span class="kpi-sub">Rapid Disaster Protocol active</span>
+                    </div>
+                </div>
+
+                <!-- Pipeline Architecture Flow Diagram -->
+                <div class="pipeline-card">
+                    <h4><i class="fa-solid fa-diagram-project text-cyan"></i> End-to-End Processing Architecture</h4>
+                    <div class="pipeline-steps">
+                        <div class="p-step">
+                            <span class="step-num">1</span>
+                            <span class="step-title">Ingest</span>
+                            <span class="step-desc">RGB &amp; Multi-spectral GeoTIFF</span>
+                        </div>
+                        <div class="p-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="p-step">
+                            <span class="step-num">2</span>
+                            <span class="step-title">Dark Channel</span>
+                            <span class="step-desc">Atmospheric haze transmission</span>
+                        </div>
+                        <div class="p-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="p-step">
+                            <span class="step-num">3</span>
+                            <span class="step-title">Guided CLAHE</span>
+                            <span class="step-desc">LAB adaptive dynamic equalization</span>
+                        </div>
+                        <div class="p-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="p-step">
+                            <span class="step-num">4</span>
+                            <span class="step-title">Cloud Mask</span>
+                            <span class="step-desc">Morphological cloud perimeter</span>
+                        </div>
+                        <div class="p-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="p-step highlight">
+                            <span class="step-num">5</span>
+                            <span class="step-title">Sector AI</span>
+                            <span class="step-desc">NDVI, Flood, Buildings, Climate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-action btn-download" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Telemetry Brief
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frontend Logic -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

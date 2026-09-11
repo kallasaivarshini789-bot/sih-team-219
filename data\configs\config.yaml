@@ -1,0 +1,53 @@
+# Satellite Cloud Removal Pipeline Configuration Schema
+
+dataset:
+  name: "SEN12MS-CR"
+  raw_dir: "data/raw/sen12ms_cr"
+  processed_dir: "data/processed"
+  dummy_dir: "dummy_data"
+  patch_size: 256
+  
+  # Sensor channels
+  optical_bands: ["B02", "B03", "B04", "B08"] # Blue, Green, Red, NIR
+  sar_bands: ["VV", "VH"]                    # Sentinel-1 Dual-Pol
+  target_bands: ["B02", "B03", "B04", "B08"]  # Cloud-free optical ground truth
+  
+  num_optical_channels: 4
+  num_sar_channels: 2
+  num_input_channels: 6                       # Stacked Optical (4) + SAR (2)
+
+preprocessing:
+  optical_max_value: 10000.0                 # Sentinel-2 L1C/L2A reflectance scaling
+  sar_vv_min_db: -25.0
+  sar_vv_max_db: 0.0
+  sar_vh_min_db: -32.0
+  sar_vh_max_db: -5.0
+  clamp_range: [0.0, 1.0]
+
+cloud_mask:
+  method: "s2cloudless"                        # Options: 's2cloudless', 'scl', 'threshold'
+  threshold: 0.4
+  average_over: 1
+  dilation_pixels: 2
+
+geographic_splits:
+  # ROIs assigned to region partitions to prevent spatial data leakage
+  train_rois: ["ROI_01", "ROI_02", "ROI_03", "ROI_04", "ROI_05", "ROI_06", "ROI_07", "ROI_08"]
+  val_rois: ["ROI_09", "ROI_10"]
+  test_rois: ["ROI_11", "ROI_12"]
+
+training:
+  batch_size: 8
+  num_workers: 2
+  seed: 42
+
+model:
+  in_channels: 6                              # 4 Optical + 2 SAR
+  out_channels: 4                             # Reconstructed Cloud-Free Optical
+  base_channels: 64
+  use_gan: true
+  
+loss_weights:
+  l1: 1.0
+  perceptual: 0.1
+  adversarial: 0.01
